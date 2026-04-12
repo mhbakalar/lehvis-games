@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lehvi's Games</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Fredoka', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 30%, #f093fb 60%, #f5576c 100%);
+      background-attachment: fixed;
+      padding: 0 0 60px 0;
+      overflow-x: hidden;
+    }
+
+    /* Floating background shapes */
+    body::before,
+    body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::before {
+      width: 500px;
+      height: 500px;
+      background: #fff;
+      top: -100px;
+      right: -100px;
+      animation: float 20s ease-in-out infinite;
+    }
+    body::after {
+      width: 400px;
+      height: 400px;
+      background: #fff;
+      bottom: -50px;
+      left: -100px;
+      animation: float 25s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(30px, -40px) scale(1.05); }
+      50% { transform: translate(-20px, 20px) scale(0.95); }
+      75% { transform: translate(40px, 30px) scale(1.02); }
+    }
+
+    header {
+      text-align: center;
+      padding: 50px 20px 30px;
+      position: relative;
+      z-index: 1;
+    }
+
+    header h1 {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      letter-spacing: -0.5px;
+    }
+
+    header p {
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.85);
+      margin-top: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 28px;
+      max-width: 1200px;
+      margin: 30px auto 0;
+      padding: 0 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  box-shadow 0.3s ease;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    }
+
+    .card:active {
+      transform: translateY(-2px) scale(0.99);
+    }
+
+    .card-image {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      position: relative;
+      background: #f0f0f0;
+    }
+
+    .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      transition: transform 0.4s ease;
+    }
+
+    .card:hover .card-image img {
+      transform: scale(1.05);
+    }
+
+    .card-image .play-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease;
+    }
+
+    .card:hover .play-overlay {
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    .play-btn {
+      width: 64px;
+      height: 64px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: scale(0.7);
+      transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .card:hover .play-btn {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .play-btn svg {
+      width: 28px;
+      height: 28px;
+      margin-left: 3px;
+    }
+
+    .card-body {
+      padding: 20px 22px 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-body h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #2d2d3a;
+      margin-bottom: 8px;
+    }
+
+    .card-body p {
+      font-size: 0.92rem;
+      font-weight: 400;
+      color: #6b6b80;
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-top: 14px;
+      align-self: flex-start;
+    }
+
+    .tag-music    { background: #fff0f6; color: #c2255c; }
+    .tag-dress    { background: #f3f0ff; color: #7048e8; }
+    .tag-style    { background: #fff4e6; color: #e8590c; }
+    .tag-farm     { background: #ebfbee; color: #2b8a3e; }
+    .tag-math     { background: #e7f5ff; color: #1971c2; }
+    .tag-garden   { background: #e6fcf5; color: #0ca678; }
+    .tag-art      { background: #fce4ec; color: #ad1457; }
+
+    @media (max-width: 700px) {
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 22px;
+        padding: 0 16px;
+      }
+      header {
+        padding: 36px 16px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Lehvi's Games</h1>
+  <p>Pick a game and start playing!</p>
+</header>
+
+<div class="grid">
+
+  <a class="card" href="https://mhbakalar.github.io/miles-farm/">
+    <div class="card-image">
+      <img src="images/miles-farm.png" alt="Miles' Farm screenshot" loading="lazy">
+      <div class="play-overlay">
+        <div class="play-btn">
+          <svg viewBox="0 0 24 24" fill="#764ba2"><polygon points="6,4 20,12 6,20"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h2>Miles' Farm</h2>
+      <p>Plant crops, water them, harvest, and raise animals on your own farm. Features weather, tractors, and friends to play with!</p>
+      <span class="tag tag-farm">Farming</span>
+    </div>
+  </a>
+
+  <a class="card" href="https://mhbakalar.github.io/kpop-demon-hunters-get-ready-day/">
+    <div class="card-image">
+      <img src="images/kpop-demon-hunters.png" alt="K-Pop Demon Hunters screenshot" loading="lazy">
+      <div class="play-overlay">
+        <div class="play-btn">
+          <svg viewBox="0 0 24 24" fill="#764ba2"><polygon points="6,4 20,12 6,20"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h2>K-Pop Demon Hunters: Get Ready Day</h2>
+      <p>Dress up Rumi, Mira, and Zoe with awesome outfits, accessories, and makeup before they hit the stage!</p>
+      <span class="tag tag-dress">Dress Up</span>
+    </div>
+  </a>
+
+  <a class="card" href="https://mhbakalar.github.io/golden/">
+    <div class="card-image">
+      <img src="images/golden.png" alt="Golden Song Maker screenshot" loading="lazy">
+      <div class="play-overlay">
+        <div class="play-btn">
+          <svg viewBox="0 0 24 24" fill="#764ba2"><polygon points="6,4 20,12 6,20"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h2>Golden: Song Maker</h2>
+      <p>Create your own K-pop melodies and drum beats with a colorful sequencer. Pick instruments, scales, and watch the characters dance!</p>
+      <span class="tag tag-music">Music</span>
+    </div>
+  </a>
+
+  <a class="card" href="https://mhbakalar.github.io/hairdo-day/">
+    <div class="card-image">
+      <img src="images/hairdo-day.png" alt="Hairdo Day screenshot" loading="lazy">
+      <div class="play-overlay">
+        <div class="play-btn">
+          <svg viewBox="0 0 24 24" fill="#764ba2"><polygon points="6,4 20,12 6,20"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h2>Hairdo Day</h2>
+      <p>Luna and Alice take turns styling each other's hair! Pick braids, ponytails, colorful dyes, and fun accessories.</p>
+      <span class="tag tag-style">Styling</span>
+    </div>
+  </a>
+
+  <a class="card" href="https://mhbakalar.github.io/numberblocks/">
+    <div class="card-image">
+      <img src="images/numberblocks.png" alt="Numberblocks screenshot" loading="lazy">
+      <div class="play-overlay">
+        <div class="play-btn">
+          <svg viewBox="0 0 24 24" fill="#764ba2"><polygon points="6,4 20,12 6,20"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h2>Numberblocks</h2>
+      <p>Drag, merge, and split colorful number blocks to learn addition, subtraction, and multiplication. Free play and guided modes!</p>
+      <span class="tag tag-math">Math</span>
+    </div>
+  </a>
+
+  <a class="card" href="https://mhbakalar.github.io/planting-different-flowers/">
+    <div class="card-image">
+      <img src="images/planting-flowers.png" alt="Planting Different Flowers screenshot" loading="lazy">
+      <div class="play-overlay">
+        <div class="play-btn">
+          <svg viewBox="0 0 24 24" fill="#764ba2"><polygon points="6,4 20,12 6,20"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h2>Planting Different Flowers</h2>
+      <p>Plant seeds, water them, and watch flowers bloom through the seasons! Move them outside to your garden when they're ready.</p>
+      <span class="tag tag-garden">Gardening</span>
+    </div>
+  </a>
+
+  <a class="card" href="https://mhbakalar.github.io/art-and-nature-stuff/">
+    <div class="card-image">
+      <img src="images/art-nature.png" alt="Art & Nature Stuff screenshot" loading="lazy">
+      <div class="play-overlay">
+        <div class="play-btn">
+          <svg viewBox="0 0 24 24" fill="#764ba2"><polygon points="6,4 20,12 6,20"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h2>Art & Nature Stuff</h2>
+      <p>A digital sketchpad with brushes, stamps, coloring pages, and stickers. Draw, color, and save your creations!</p>
+      <span class="tag tag-art">Art</span>
+    </div>
+  </a>
+
+</div>
+
+</body>
+</html>
